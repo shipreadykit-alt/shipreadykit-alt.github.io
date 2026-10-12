@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ship-Ready Agent Kit: guardrails that make Claude Code &amp; Cursor tell the truth</title>
+<meta name="description" content="8 enforced skills and hooks for Claude Code and Cursor: blocks fake 'all tests pass', weakened tests, silent fallbacks, destructive DB commands, leaked secrets and hallucinated packages.">
+<meta property="og:title" content="Ship-Ready Agent Kit">
+<meta property="og:description" content="Your agent said “All tests pass.” It didn't run them. Guardrails that enforce, not suggest.">
+<meta property="og:image" content="https://shipreadykit-alt.github.io/assets/og.png">
+<meta property="og:url" content="https://shipreadykit-alt.github.io/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="assets/logo.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap row">
+    <a class="logo" href="./">▲ ship-ready<span>/agent-kit</span></a>
+    <nav><a href="#proof">Proof</a><a href="#inside">What's inside</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a><a href="https://github.com/shipreadykit-alt/agent-kit-free">GitHub</a></nav>
+  </div>
+</header>
+
+<section class="hero wrap">
+  <p class="eyebrow">For Claude Code &amp; Cursor · Node, Next.js, Express, Prisma, Drizzle</p>
+  <h1>Your agent said <em>“All tests pass ✅”</em>.<br>It didn't run them.</h1>
+  <p class="lead">Ship-Ready Agent Kit is 8 skills backed by <strong>real enforcement</strong>: Claude Code hooks that exit with code 2 and zero-dependency Node checks. Your agent can't fake success, bend tests, swallow errors, wipe your database, print your API keys or install a hallucinated package without being stopped.</p>
+  <div class="cta-row">
+    <a class="btn primary" href="mailto:shipreadykit@gmail.com?subject=Notify%20me%20at%20launch%20-%20Ship-Ready%20Agent%20Kit">Get notified at launch</a>
+    <a class="btn ghost" href="https://github.com/shipreadykit-alt/agent-kit-free">Free safety pack (5 guards) on GitHub</a>
+  </div>
+  <p class="fine">Full kit: coming soon (one-time payment, 14-day refund) · Free pack: available now, MIT</p>
+  <pre class="term" aria-label="Terminal demo"><span class="c"># the agent tries to finish the task</span>
+<span class="p">agent ›</span> Done! Added trending articles. All tests pass ✅
+<span class="r">[agent-kit] BLOCKED:</span> You claimed success but no verification has been run on these changes.
+<span class="p">agent ›</span> node .claude/agent-kit/bin/run-verify.mjs
+Tests:       7 failed, 1 skipped, 18 passed, 27 total
+VERIFY FAILED: test=1
+<span class="r">[agent-kit] BLOCKED:</span> The last verification FAILED. You cannot report success.
+<span class="c"># real output from our test run on gothinkster/node-express-realworld-example-app</span></pre>
+</section>
+
+<section class="incidents wrap">
+  <h2>This isn't hypothetical</h2>
+  <div class="grid3">
+    <a class="card" href="https://github.com/anthropics/claude-code/issues/27063" target="_blank" rel="noopener"><b>60+ production tables wiped</b><span>An agent ran <code>drizzle-kit push --force</code> against prod. (claude-code #27063)</span></a>
+    <a class="card" href="https://github.com/anthropics/claude-code/issues/46940" target="_blank" rel="noopener"><b>“ALL PASSED” while failing</b><span>Agent changed the denominator and reported a failing suite as green. (claude-code #46940)</span></a>
+    <a class="card" href="https://github.com/anthropics/claude-code/issues/30731" target="_blank" rel="noopener"><b>Keys printed to transcript</b><span>Agent read <code>/proc/*/environ</code> and <code>.env</code>, then inlined secrets. (claude-code #30731)</span></a>
+    <a class="card" href="https://github.com/anthropics/claude-code/issues/319" target="_blank" rel="noopener"><b>Tests rewritten to pass</b><span>“It updated the Makefile to only run tests that were passing.” (claude-code #319)</span></a>
+    <a class="card" href="https://www.reddit.com/r/ClaudeAI/comments/1sdmohb/" target="_blank" rel="noopener"><b>Silent fake success</b><span>try/catch returning sample data: “the output you saw on day one was never real.” (r/ClaudeAI)</span></a>
+    <a class="card" href="https://www.aikido.dev/blog/slopsquatting-ai-package-hallucination-attacks" target="_blank" rel="noopener"><b>Hallucinated packages</b><span><code>react-codeshift</code> never existed; it spread to 237 repos via AI-generated skills. (Aikido)</span></a>
+  </div>
+  <p class="why">CLAUDE.md rules are <em>suggestions</em>. Agents ignore them under pressure. Hooks are <em>enforcement</em>.</p>
+</section>
+
+<section id="inside" class="wrap">
+  <h2>What's inside (v0.1: 8 skills)</h2>
+  <div class="grid2">
+    <div class="skill"><h3>verify-before-done <span class="tag">Stop hook</span> <span class="tag free">free</span></h3><p>Detects your real test/typecheck/lint commands, runs them, and writes a receipt tied to the exact working tree. Claims like “done”, “fixed” or “all tests pass” are blocked without a fresh passing receipt. Editing after verifying invalidates it.</p></div>
+    <div class="skill"><h3>test-integrity <span class="tag free">free</span></h3><p>Catches <code>.skip</code>/<code>.only</code>, deleted assertions and test files, changed expectations, tautologies, <code>|| true</code> and loosened test config. A weakened test also blocks the “done” claim.</p></div>
+    <div class="skill"><h3>fail-loud <span class="tag free">free</span></h3><p>Finds empty catches, log-and-continue, catches returning mock/sample/empty data, <code>.catch(() =&gt; {})</code>, <code>except: pass</code>. Diff mode checks only what the agent just wrote.</p></div>
+    <div class="skill"><h3>destructive-guard <span class="tag">PreToolUse</span> <span class="tag free">free</span></h3><p>Blocks <code>prisma migrate reset</code>, <code>db push --accept-data-loss</code>, <code>drizzle-kit push --force</code>, DROP/TRUNCATE, <code>reset --hard</code>, force-push and <code>rm -rf</code> outside build dirs. Normal dev commands pass.</p></div>
+    <div class="skill"><h3>migration-safety <span class="tag">full kit</span></h3><p>Reviews new SQL migrations: DROP COLUMN, NOT NULL without default, unscoped UPDATE/DELETE, renames, unique indexes on live tables, and edits to already-applied migrations. Suggests expand → migrate → contract.</p></div>
+    <div class="skill"><h3>secret-shield <span class="tag">PreToolUse</span> <span class="tag free">free</span></h3><p>Stops reading <code>.env</code>/key files, env dumps and echoing tokens. Scans the diff or repo for Stripe/OpenAI/AWS/GitHub keys and DB URLs, with values redacted in output.</p></div>
+    <div class="skill"><h3>dep-verify <span class="tag">PreToolUse</span> <span class="tag">full kit</span></h3><p>Before any <code>npm/pnpm/yarn/bun/pip install</code>, it checks the package exists, isn't brand-new or unused, and isn't a near-miss of a popular name. Nonexistent packages are blocked; suspicious ones go to you.</p></div>
+    <div class="skill"><h3>context-pack <span class="tag">full kit</span></h3><p>Fingerprints your repo (stack, exact commands, layout, Prisma models, routes, env var <em>names</em>) and writes one AGENTS.md, with CLAUDE.md and Cursor rule adapters. <code>--check</code> catches drift.</p></div>
+  </div>
+  <p class="fine center">Plain Node ≥18, zero dependencies, nothing phones home (dep-verify only queries the public npm/PyPI registries). Works in Claude Code via hooks and in Cursor via rules plus the same scripts. CI-friendly exit codes.</p>
+</section>
+
+<section id="proof" class="wrap">
+  <h2>Proof: tested on two real open-source repos</h2>
+  <p>We replayed the documented failure modes (fake-data fallback, skipped test, bent expectation, destructive migration, hallucinated dependency, hard-coded key) on scratch clones of <a href="https://github.com/gothinkster/node-express-realworld-example-app" target="_blank" rel="noopener">node-express-realworld-example-app</a> (Express + Prisma + Jest) and <a href="https://github.com/shadcn-ui/taxonomy" target="_blank" rel="noopener">shadcn-ui/taxonomy</a> (Next.js 13 + Prisma).</p>
+  <table class="proof">
+    <thead><tr><th>Failure the agent introduced</th><th>Without kit</th><th>With kit</th></tr></thead>
+    <tbody>
+      <tr><td>catch → <code>return MOCK_ARTICLES</code></td><td>unnoticed</td><td>✗ HIGH catch-returns-fake-data</td></tr>
+      <tr><td><code>test.skip</code> + changed expectation</td><td>unnoticed</td><td>✗ HIGH test-skipped · expectation-changed</td></tr>
+      <tr><td><code>"test": "echo no tests &amp;&amp; exit 0"</code></td><td>“tests pass”</td><td>✗ HIGH test-script-neutered · “done” blocked</td></tr>
+      <tr><td>DROP COLUMN + NOT NULL w/o default</td><td>unnoticed</td><td>✗ HIGH ×3 migration-safety</td></tr>
+      <tr><td>Edited an applied migration</td><td>unnoticed</td><td>✗ HIGH edited-applied-migration</td></tr>
+      <tr><td><code>npm i zodd</code> / nonexistent pkg</td><td>installs / errors</td><td>✗ BLOCKED: does not exist</td></tr>
+      <tr><td><code>prisma migrate reset</code>, <code>reset --hard</code>, <code>cat .env</code></td><td>runs</td><td>✗ BLOCKED before execution</td></tr>
+      <tr><td>“All tests pass ✅” with 7 failing</td><td>believed</td><td>✗ Stop blocked: verification FAILED</td></tr>
+    </tbody>
+  </table>
+  <p><img src="assets/demo-hooks.gif" alt="Terminal demo: the kit blocking a fake &quot;all tests pass&quot; claim, a force-push and reading .env" loading="lazy" style="width:100%;max-width:880px;border-radius:12px;border:1px solid #232a32"></p>
+  <p class="fine">Full before/after logs will ship with the full kit (<code>test-runs/</code>). Honest note: one upstream suite (realworld <code>auth.service.test.ts</code>) fails without a live Postgres. The kit made our agent report that instead of claiming green.</p>
+</section>
+
+<section id="free" class="wrap free">
+  <h2>Free safety pack</h2>
+  <p><b>verify-before-done</b>, <b>test-integrity</b>, <b>fail-loud</b>, <b>destructive-guard</b> and <b>secret-shield</b>, MIT-licensed. Install them on every repo today.</p>
+  <p><a class="btn primary" href="https://github.com/shipreadykit-alt/agent-kit-free">Get the free pack on GitHub</a></p>
+</section>
+
+<section id="pricing" class="wrap">
+  <h2>Pricing</h2>
+  <div class="grid3 tiers">
+    <div class="tier hot"><span class="badge">Coming soon</span><h3>Solo</h3><p class="price">$29</p><ul><li>All 8 skills + hooks (5 free + dep-verify, migration-safety, context-pack)</li><li>Claude Code + Cursor</li><li>Installer</li><li>Before/after test logs</li><li>1 developer</li></ul><a class="btn primary" href="mailto:shipreadykit@gmail.com?subject=Notify%20me%20at%20launch%20-%20Ship-Ready%20Agent%20Kit">Get notified at launch</a></div>
+    <div class="tier"><span class="badge roadmap">Roadmap</span><h3>Pro</h3><p class="price">TBA</p><ul><li>Everything in Solo</li><li><span class="tag">roadmap</span> More skills (protected-paths, session-handoff, minimal-diff, cross-agent review)</li><li><span class="tag">roadmap</span> GitHub Actions workflow running the scanners on PRs</li><li><span class="tag">roadmap</span> Incident-replay test suite</li></ul><a class="btn ghost" href="mailto:shipreadykit@gmail.com?subject=Notify%20me%20at%20launch%20-%20Ship-Ready%20Agent%20Kit">Interested? Tell us</a></div>
+    <div class="tier"><span class="badge roadmap">Roadmap</span><h3>Team</h3><p class="price">TBA</p><ul><li><span class="tag">roadmap</span> Multi-seat license</li><li><span class="tag">roadmap</span> Org-wide install script</li><li><span class="tag">roadmap</span> Shared AGENTS.md conventions template</li></ul><a class="btn ghost" href="mailto:shipreadykit@gmail.com?subject=Notify%20me%20at%20launch%20-%20Ship-Ready%20Agent%20Kit">Interested? Tell us</a></div>
+  </div>
+  <p class="fine center">Prices are planned, in USD; regional (India) pricing is planned for launch. Checkout isn't live yet. Nothing is for sale on this page today.</p>
+</section>
+
+<section id="faq" class="wrap faq">
+  <h2>FAQ</h2>
+  <details><summary>Isn't this just a CLAUDE.md I could write myself?</summary><p>The rules part, yes, and the generated AGENTS.md is yours to edit. The value is enforcement: hooks block the action itself, and deterministic scanners don't “forget” instructions halfway through a long session.</p></details>
+  <details><summary>Will it slow my agent down?</summary><p>Each guard hook is a small Node process: about 85 ms per call in our measurements, mostly Node startup. dep-verify makes two registry requests only when installing a package. verify-before-done only adds the cost of running your own test suite, which the agent should be doing anyway.</p></details>
+  <details><summary>Does it work with Cursor?</summary><p>Yes, via an always-apply Cursor rule plus the same Node scripts run from the terminal or CI. Automatic blocking hooks are currently Claude Code-only.</p></details>
+  <details><summary>False positives?</summary><p>Some, by design (e.g. it asks before installing a package with &lt;500 weekly downloads). Every rule is readable plain JavaScript; tune or delete what you don't want.</p></details>
+  <details><summary>Does it send my code anywhere?</summary><p>No. Nothing leaves your machine except package-name lookups to the public npm/PyPI registries.</p></details>
+  <details><summary>Refunds?</summary><p>When the paid kit launches: 14 days, no questions. See the <a href="refund.html">refund policy</a>.</p></details>
+</section>
+
+<footer class="wrap foot">
+  <p>Built by a full-stack dev with 5 years of production Node/React experience. Not affiliated with Anthropic or Cursor (Anysphere). · <a href="refund.html">Refund policy</a> · <a href="mailto:shipreadykit@gmail.com">Support</a></p>
+</footer>
+
+</body>
+</html>
